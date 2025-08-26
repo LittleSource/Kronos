@@ -1,8 +1,10 @@
 import ccxt
 import pandas as pd
 import matplotlib.pyplot as plt
-from model import Kronos, KronosTokenizer, KronosPredictor
 import matplotlib.dates as mdates
+import sys
+sys.path.append("../")
+from model import Kronos, KronosTokenizer, KronosPredictor
 
 def plot_history_and_prediction(kline_df, pred_df, y_timestamp):
     # 将所有时间戳转换为 naive 时间戳，去掉时区信息
@@ -41,8 +43,16 @@ def calculate_percentage_change(actual, predicted):
     return (predicted - actual) / actual * 100
 
 # 获取 ETH/USDT 的历史数据
-exchange = ccxt.binance()  # 初始化 Binance API
-symbol = 'ETH/USDT'  # 交易对
+# 配置HTTP代理
+proxies = {
+    'http': 'http://127.0.0.1:7890',   # HTTP代理地址
+    'https': 'http://127.0.0.1:7890',  # HTTPS代理地址
+}
+exchange = ccxt.binance({
+    'proxies': proxies,  # 设置代理
+    'timeout': 30000,    # 设置超时时间（毫秒）
+})  # 初始化 Binance API
+symbol = 'BTC/USDT'  # 交易对
 timeframe = '15m'  # 时间框架：15分钟
 limit = 400  # 获取的数据条数，最多获取1000个数据点
 
